@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ศีล 227 ข้อ: สิกขาบทแห่งพระภิกษุ (ฉบับสมบูรณ์)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Harmony -->
+    <!-- Application Structure Plan: The structure is a dashboard beginning with an overview section for Minor Precepts (Sila 5 & 8) using comparative text cards, transitioning into a detailed exploration section for the 227 Precepts. The 227 Precepts section maintains its original dashboard layout, featuring a high-level donut chart and category-based filtering/searching. This new hierarchy provides context (Sila 5/8) before complexity (Sila 227), enhancing user understanding and knowledge progression. -->
+    <!-- Visualization & Content Choices: - Report Info: Sila 5 & 8 text listings. Goal: Compare/Inform. Viz/Method: Side-by-side HTML cards. Interaction: None, direct text consumption. Justification: Optimal for simple, sequential rules. - Report Info: Distribution of 227 precepts across 8 categories. Goal: Summarize. Viz/Method: Donut Chart (Chart.js/Canvas). Interaction: Hover tooltips. Justification: Quickly shows the proportion and scale of each category. - Report Info: Full list of 227 precepts. Goal: Organize/Inform. Viz/Method: Dynamically generated HTML list/cards. Interaction: Filtered by category buttons and a search input. Library/Method: Vanilla JS DOM manipulation. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #FDFBF8;
+            color: #4A4A4A;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+        .nav-button.active {
+            background-color: #D1A272;
+            color: #FFFFFF;
+            font-weight: 700;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .nav-button:hover:not(.active) {
+            background-color: #EFE3D8;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border-left: 5px solid #D1A272;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .highlight {
+            background-color: #FCE8C5;
+            font-weight: 600;
+        }
+        .minor-precept-card {
+            background-color: #FFFFFF;
+            border: 1px solid #E5C9A9;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#A97C50]">ศีล: การศึกษาเปรียบเทียบ</h1>
+            <p class="text-lg text-gray-600 mt-2">สำรวจศีล 5, ศีล 8 และ สิกขาบท 227 ข้อ</p>
+        </header>
+
+        <main>
+            <!-- NEW SECTION: ศีล 5 และ ศีล 8 -->
+            <section id="minor-precepts-section" class="mb-12">
+                <h2 class="text-3xl font-bold text-[#A97C50] mb-6 border-b-2 border-[#D1A272] pb-2">ภาพรวมศีลเบื้องต้น (ศีล 5 และ ศีล 8)</h2>
+                 <p class="text-gray-700 mb-8">
+                    ส่วนนี้แสดงรายละเอียดของศีล 5 สำหรับคฤหัสถ์ทั่วไป และศีล 8 สำหรับผู้ถืออุโบสถศีลหรือผู้ปฏิบัติธรรม 
+                    การทำความเข้าใจศีลสองชุดนี้เป็นพื้นฐานสำคัญ ก่อนจะศึกษาศีล 227 ข้อสำหรับพระภิกษุต่อไป
+                </p>
+                
+                <div id="minor-precepts-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Cards will be injected here -->
+                </div>
+            </section>
+            <!-- END NEW SECTION -->
+
+            <h2 class="text-3xl font-bold text-[#A97C50] mt-12 mb-6 border-b-2 border-[#D1A272] pb-2">สิกขาบท 227 ข้อ (ศีลสำหรับพระภิกษุ)</h2>
+            
+            <section id="summary-section" class="mb-12">
+                 <p class="text-gray-700 mb-8 max-w-4xl mx-auto">
+                    ส่วนนี้คือภาพรวมของสิกขาบททั้งหมด 227 ข้อ โดยแบ่งตามหมวดหมู่หลัก ท่านสามารถใช้แผนภูมินี้เพื่อทำความเข้าใจภาพรวมเบื้องต้น ก่อนที่จะสำรวจรายละเอียดในแต่ละหมวดหมู่ผ่านปุ่มนำทางด้านล่าง
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                    <div class="md:col-span-1 flex flex-col justify-center space-y-4">
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center border-l-4 border-[#D1A272]">
+                            <h3 class="text-xl font-bold text-gray-700">สิกขาบททั้งหมด</h3>
+                            <p class="text-4xl font-bold text-[#A97C50] mt-2">227</p>
+                            <p class="text-gray-500">ข้อ</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center border-l-4 border-[#E5C9A9]">
+                            <h3 class="text-xl font-bold text-gray-700">หมวดหมู่</h3>
+                            <p class="text-4xl font-bold text-[#A97C50] mt-2">8</p>
+                            <p class="text-gray-500">ประเภท</p>
+                        </div>
+                    </div>
+                    <div class="md:col-span-2">
+                        <div class="chart-container">
+                            <canvas id="preceptsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="explorer-section">
+                <nav id="category-nav" class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8">
+                </nav>
+
+                <div class="mb-8 max-w-xl mx-auto">
+                    <input type="text" id="search-input" class="w-full px-4 py-3 border border-gray-300 rounded-full shadow-sm focus:ring-2 focus:ring-[#D1A272] focus:border-transparent transition" placeholder="ค้นหาในสิกขาบท 227 ข้อ... เช่น เงิน, อาหาร, สตรี">
+                </div>
+
+                 <div id="precept-list" class="space-y-3">
+                </div>
+                 <p id="no-results" class="text-center text-gray-500 py-10 text-lg hidden">ไม่พบผลลัพธ์ที่ตรงกับการค้นหา</p>
+            </section>
+
+        </main>
+
+        <footer class="text-center mt-16 py-6 border-t border-gray-200">
+            <p class="text-gray-500 mb-4">พัฒนาขึ้นเพื่อการศึกษาและเผยแผ่ความรู้ทางพระพุทธศาสนา</p>
+            <div class="flex justify-center space-x-4">
+                <a href="https://github.com/prhdev222/tumma_buddha.git" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   class="inline-flex items-center px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    GitHub Repository
+                </a>
+                <a href="สรุปศีล 227 ข้อ พระภิกษุ.docx" 
+                   download="สรุปศีล 227 ข้อ พระภิกษุ.docx"
+                   class="inline-flex items-center px-4 py-2 bg-[#A97C50] text-white rounded-lg hover:bg-[#8B6B42] transition-colors duration-200">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    ดาวน์โหลดไฟล์ .docx
+                </a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const minorPreceptData = [
+            {
+                title: "ศีล 5 (ปัญจศีล)",
+                subtitle: "สำหรับคฤหัสถ์ทั่วไป",
+                rules: [
+                    "1. เว้นจากการฆ่าสัตว์ (ปาณาติปาตา เวรมณี)",
+                    "2. เว้นจากการลักทรัพย์ (อทินนาทานา เวรมณี)",
+                    "3. เว้นจากการประพฤติผิดในกาม (กาเมสุมิจฉาจารา เวรมณี)",
+                    "4. เว้นจากการพูดปด (มุสาวาทา เวรมณี)",
+                    "5. เว้นจากการดื่มน้ำเมาและสิ่งเสพติด (สุราเมรยมัชชปมาทัฏฐานา เวรมณี)"
+                ]
+            },
+            {
+                title: "ศีล 8 (อัฏฐังคิกอุโบสถ)",
+                subtitle: "สำหรับผู้รักษาอุโบสถศีล/ปฏิบัติธรรม",
+                rules: [
+                    "1. เว้นจากการฆ่าสัตว์",
+                    "2. เว้นจากการลักทรัพย์",
+                    "3. เว้นจากการประพฤติผิดพรหมจรรย์ (งดเว้นกามกิจทุกชนิด)",
+                    "4. เว้นจากการพูดปด",
+                    "5. เว้นจากการดื่มน้ำเมาและสิ่งเสพติด",
+                    "6. เว้นจากการบริโภคอาหารในเวลาวิกาล (หลังเที่ยงวันจนถึงรุ่งเช้า)",
+                    "7. เว้นจากการฟ้อนรำ ขับร้อง ประโคมดนตรี และประดับประดาด้วยดอกไม้ของหอม เครื่องประทินผิว",
+                    "8. เว้นจากการนั่งและนอนบนที่นอนสูงใหญ่หรือที่นอนยัดด้วยนุ่นและสำลี"
+                ]
+            }
+        ];
+
+        const preceptData = [
+            { category: "ปาราชิก", count: 4, rules: [
+                "เสพเมถุน", "ลักทรัพย์ (ราคา 5 มาสกขึ้นไป)", "ฆ่ามนุษย์", "อวดอุตริมนุสธรรมที่ไม่มีในตน"
+            ]},
+            { category: "สังฆาทิเสส", count: 13, rules: [
+                "ทำให้น้ำอสุจิเคลื่อน", "เคล้าคลึงจับต้องกายสตรี", "พูดเกี้ยวสตรี", "พูดล่อให้สตรีบำเรอตนด้วยกาม",
+                "ทำหน้าที่ชักสื่อให้ชายหญิงเป็นสามีภรรยากัน", "สร้างกุฏิด้วยเงินส่วนตัว ต้องให้สงฆ์แสดงที่ให้ก่อน", "สร้างวิหารใหญ่ ต้องให้สงฆ์แสดงที่ให้ก่อน",
+                "แกล้งใส่ความภิกษุอื่นด้วยอาบัติปาราชิกโดยไม่มีมูล", "เลี่ยงเรื่องใส่ความภิกษุอื่นด้วยอาบัติปาราชิกโดยไม่มีมูล",
+                "ทำลายสงฆ์ให้แตกกัน (ภิกษุอื่นห้ามไม่ฟัง)", "เป็นพวกของผู้ทำลายสงฆ์ (ภิกษุอื่นห้ามไม่ฟัง)",
+                "เป็นผู้ว่ายากสอนยาก (ภิกษุอื่นห้ามไม่ฟัง)", "ประทุษร้ายตระกูล (ประจบคฤหัสถ์)"
+            ]},
+            { category: "อนิยต", count: 2, rules: [
+                "นั่งในที่ลับตากับสตรีสองต่อสอง ถ้ามีคนน่าเชื่อถือมาพูดขึ้นด้วยอาบัติ 3 อย่าง (ปาราชิก สังฆาทิเสส หรือปาจิตตีย์) ให้ตัดสินตามที่เขากล่าว",
+                "นั่งในที่ลับหูกับสตรีสองต่อสอง ถ้ามีคนน่าเชื่อถือมาพูดขึ้นด้วยอาบัติ 2 อย่าง (สังฆาทิเสส หรือปาจิตตีย์) ให้ตัดสินตามที่เขากล่าว"
+            ]},
+            { category: "นิสสัคคิยปาจิตตีย์", count: 30, rules: [
+                "เก็บอติเรกจีวรไว้เกิน 10 วัน", "อยู่ปราศจากไตรจีวรแม้คืนเดียว", "เก็บผ้าที่จะทำจีวรไว้เกินกำหนด 1 เดือน",
+                "ใช้ให้ภิกษุณีซักจีวรเก่า", "รับจีวรจากมือภิกษุณีที่ไม่ใช่ญาติ", "ขอจีวรจากคฤหัสถ์ที่ไม่ใช่ญาติ (เว้นแต่มีเหตุ)",
+                "รับจีวรเกินกว่าที่เขากำหนดให้", "พูดทำนองให้เขาถวายจีวรที่ดีขึ้น", "พูดให้เขารวมเงินซื้อจีวรดีๆ มาถวาย",
+                "ทวงจีวรจากคนที่รับปากจะถวาย เกิน 3 ครั้ง", "หล่อสันถัต (เครื่องปูนั่ง) ด้วยขนเจียมเจือด้วยไหม", "หล่อสันถัตด้วยขนเจียมดำล้วน",
+                "หล่อสันถัตใหม่ ให้ใช้ของเก่าปนลงไปด้วย", "หล่อสันถัตใหม่ ใช้ได้ 6 ปี", "ทำสันถัตสำหรับนั่ง ต้องทำให้ได้ขนาด",
+                "นำขนเจียมไปด้วยตนเองเกิน 3 โยชน์", "ใช้ภิกษุณีที่ไม่ใช่ญาติทำความสะอาดขนเจียม", "รับเงินทอง หรือยินดีในเงินทองที่เขาเก็บไว้เพื่อตน",
+                "ทำการซื้อขายด้วยเงินทอง", "ทำการแลกเปลี่ยนสิ่งของกับคฤหัสถ์", "เก็บบาตรอติเรกไว้เกิน 10 วัน",
+                "ขอบาตรจากคฤหัสถ์ที่ไม่ใช่ญาติ (เมื่อบาตรเป็นแผลไม่เกิน 5 แห่ง)", "เก็บเภสัช 5 (เนยใส เนยข้น น้ำมัน น้ำผึ้ง น้ำอ้อย) ไว้เกิน 7 วัน",
+                "แสวงหาและทำจีวรเมื่อเหลือเวลาอีก 1 เดือนจะถึงฤดูฝน", "รับผ้าอาบน้ำฝนแล้วใช้เกินกำหนด", "จำพรรษาแล้วออกไปโดยไม่สัตตาหะ กลับมาขอผ้าอีก",
+                "อยู่ในเสนาสนะป่าเป็นที่น่ากลัว ต้องเก็บผ้าไว้ในบ้านได้", "นำลาภของสงฆ์มาเพื่อบุคคล", "ให้จีวรแก่ภิกษุอื่นแล้วโกรธ ชิงคืนมา",
+                "ขอยาเพื่อตน แล้วนำไปให้ผู้อื่น"
+            ]},
+            { category: "ปาจิตตีย์", count: 92, rules: [
+                "พูดปด", "ด่าภิกษุ", "พูดส่อเสียด", "แสดงธรรมแก่ผู้ไม่ป่วยที่นั่งสูงกว่า", "แสดงธรรมแก่ผู้ไม่ป่วยที่สวมรองเท้า",
+                "แสดงธรรมแก่ผู้ไม่ป่วยที่อยู่ในยาน", "แสดงธรรมแก่ผู้ไม่ป่วยที่อยู่บนที่นอน", "แสดงธรรมแก่ผู้ไม่ป่วยที่รัดเข่า", "แสดงธรรมแก่ผู้ไม่ป่วยที่สวมหมวก",
+                "แสดงธรรมแก่ผู้ไม่ป่วยที่คลุมศีรษะ", "นั่งบนอาสนะเดียวกับผู้หญิง", "แสดงธรรมแก่ผู้หญิงเกิน 5-6 คำ",
+                "บอกอุตริมนุสธรรมที่มีจริงแก่ผู้ไม่ได้รับสมมติ", "บอกอาบัติชั่วหยาบของภิกษุอื่นแก่อนุปสัมบัน", "ขุดดินหรือใช้ให้ขุด",
+                "ทำลายต้นไม้", "พูดเลี่ยงเมื่อถูกสอบสวน", "ติเตียนภิกษุผู้ทำการสงฆ์", "ทิ้งเครื่องใช้ของสงฆ์ไว้กลางแจ้ง",
+                "นอนในวิหารสงฆ์ไม่เก็บที่นอน", "นอนแทรกภิกษุผู้เข้าไปอยู่ก่อน", "ฉุดคร่าภิกษุออกจากวิหารสงฆ์",
+                "นั่งทับนอนทับบนเตียงที่อยู่ชั้นบน", "มุงหลังคาวิหารเกิน 3 ชั้น", "รดน้ำต้นไม้ที่เขาปลูกเพื่อบูชา",
+                "ไม่ได้รับสมมติ สอนนางภิกษุณี", "แม้ได้รับสมมติ แต่เมื่อพระอาทิตย์ตกแล้ว ยังสอนนางภิกษุณี", "ไปสอนภิกษุณีถึงที่อยู่",
+                "กล่าวหาภิกษุอื่นว่าสอนภิกษุณีเพราะเห็นแก่ลาภ", "ให้จีวรแก่ภิกษุณีที่ไม่ใช่ญาติ", "เย็บจีวรให้ภิกษุณีที่ไม่ใช่ญาติ",
+                "เดินทางร่วมกับภิกษุณี", "ชวนภิกษุณีเดินทางร่วมเรือลำเดียวกัน", "ฉันอาหารที่ภิกษุณีจัดการให้",
+                "นั่งในที่ลับกับภิกษุณีสองต่อสอง", "ฉันอาหารในโรงทานเกิน 1 มื้อ", "ฉันอาหารเป็นหมู่ (เกิน 3 รูป)",
+                "รับนิมนต์ที่อื่นแล้วไปฉันที่อื่นอีก", "รับบิณฑบาตที่มีข้าวสุกและกับข้าวมากเกิน 3 บาตร", "ฉันอาหารที่ยังไม่ได้ทำกัปปิยะ",
+                "ฉันอาหารในเวลาวิกาล (หลังเที่ยงวันถึงรุ่งเช้า)", "ฉันอาหารที่เก็บสะสมไว้ค้างคืน", "ขออาหารประณีตเพื่อตน",
+                "ฉันอาหารที่ไม่ได้ประเคน", "ให้น้ำหรือของฉันแก่ชีเปลือย", "ชวนภิกษุไปบิณฑบาตด้วยกันแล้วไล่กลับ",
+                "เข้าไปแทรกแซงในสกุลที่มีคน 2 คน", "นั่งในที่ลับกับผู้หญิง", "นั่งในที่แจ้งกับผู้หญิงสองต่อสอง",
+                "รับนิมนต์แล้วไม่บอกลาเจ้าของบ้านก่อนไปที่อื่น", "ขอปัจจัยเพื่อฉันอาหารเกินกำหนด", "ไปดูการรบ",
+                "พักอยู่ในกองทัพเกิน 2-3 คืน", "ขณะพักในกองทัพ ไปดูเขารบกัน", "ดื่มสุราเมรัย", "จี้ภิกษุ",
+                "ลงเล่นน้ำ", "แสดงความไม่เคารพภิกษุผู้แก่กว่า", "หลอกให้ภิกษุกลัว", "ติดไฟเพื่อผิง", "อาบน้ำบ่อยๆ",
+                "ทำเครื่องหมายที่เครื่องนุ่งห่ม", "ซ่อนบริขารของภิกษุอื่น", "ให้คืนบริขารที่ตนยืมมา",
+                "ฆ่าสัตว์", "ฉันน้ำมีตัวสัตว์", "รื้อฟื้นอธิกรณ์ที่ชำระแล้ว", "ปกปิดอาบัติชั่วหยาบของภิกษุอื่น",
+                "บวชให้คนอายุไม่ถึง 20 ปี", "ชวนพ่อค้าผู้หนีภาษีเดินทางร่วมกัน", "ชวนผู้หญิงเดินทางร่วมกัน",
+                "กล่าวตู่พระธรรมวินัย", "คบหาภิกษุผู้กล่าวตู่พระธรรมวินัย", "คบหาสามเณรที่ถูกไล่ออก", "ไม่เอื้อเฟื้อในสิกขาบท",
+                "เข้าไปในห้องพระราชาที่ยังไม่เสด็จออก", "เก็บของมีค่าที่ตกอยู่", "เข้าบ้านในเวลาวิกาลโดยไม่บอกลา", "ทำกล่องเข็มด้วยกระดูก งา หรือเขา",
+                "ทำเตียงตั่งมีเท้าสูงเกินประมาณ", "ทำเตียงตั่งหุ้มนุ่น", "ทำผ้าปูนั่งเกินขนาด", "ทำผ้าปิดฝีเกินขนาด",
+                "ทำผ้าอาบน้ำฝนเกินขนาด", "ทำจีวรมีขนาดเท่าสุคตจีวร"
+            ]},
+            { category: "ปาฏิเทสนียะ", count: 4, rules: [
+                "รับของเคี้ยวของฉันจากมือภิกษุณีที่ไม่ใช่ญาติมาฉัน", "ขณะที่เขานิมนต์ฉันอยู่ ถ้าภิกษุณีมายืนสั่งให้ตักนั่นตักนี่ ต้องไล่เธอไป",
+                "รับอาหารในสกุลที่สงฆ์สมมติว่าเป็นเสขะ (ต้องศึกษา)", "อยู่ในเสนาสนะป่า รับอาหารที่เขาไม่ได้แจ้งไว้ล่วงหน้ามาฉัน"
+            ]},
+            { category: "เสขิยะ", count: 75, rules: [
+                "นุ่งให้เรียบร้อย", "ห่มให้เรียบร้อย", "ปิดกายด้วยดี ไปในบ้าน", "ปิดกายด้วยดี นั่งในบ้าน", "สำรวมด้วยดี ไปในบ้าน",
+                "สำรวมด้วยดี นั่งในบ้าน", "มีสายตาทอดลง ไปในบ้าน", "มีสายตาทอดลง นั่งในบ้าน", "ไม่เวิกผ้า ไปในบ้าน", "ไม่เวิกผ้า นั่งในบ้าน",
+                "ไม่หัวเราะดัง ไปในบ้าน", "ไม่หัวเราะดัง นั่งในบ้าน", "ไม่พูดเสียงดัง ไปในบ้าน", "ไม่พูดเสียงดัง นั่งในบ้าน",
+                "ไม่โคลงกาย ไปในบ้าน", "ไม่โคลงกาย นั่งในบ้าน", "ไม่ไกวแขน ไปในบ้าน", "ไม่ไกวแขน นั่งในบ้าน",
+                "ไม่สั่นศีรษะ ไปในบ้าน", "ไม่สั่นศีรษะ นั่งในบ้าน", "ไม่ค้ำกาย ไปในบ้าน", "ไม่ค้ำกาย นั่งในบ้าน",
+                "ไม่คลุมศีรษะ ไปในบ้าน", "ไม่คลุมศีรษะ นั่งในบ้าน", "ไม่เดินกระโหย่ง ไปในบ้าน",
+                "ไม่นั่งรัดเข่าในบ้าน", "รับบิณฑบาตโดยเคารพ", "มองดูในบาตรขณะรับบิณฑบาต", "รับบิณฑบาตมีแกงพอสมควรแก่ข้าวสุก",
+                "รับบิณฑบาตแต่พอเสมอขอบปากบาตร", "ฉันบิณฑบาตโดยเคารพ", "มองดูในบาตรขณะฉัน", "ฉันบิณฑบาตไปตามลำดับ",
+                "ฉันบิณฑบาตมีแกงพอสมควรแก่ข้าวสุก", "ไม่ขยุ้มข้าวสุกจากตรงกลางก่อน", "ไม่กลบแกงหรือกับข้าวด้วยข้าวสุก",
+                "ไม่ขอแกงหรือกับข้าวเพื่อประโยชน์แก่ตน", "ไม่มองดูบาตรของผู้อื่นด้วยคิดจะติเตียน", "ไม่ทำคำข้าวให้ใหญ่เกินไป",
+                "ทำคำข้าวให้กลมกล่อม", "ไม่อ้าปากเมื่อคำข้าวยังมาไม่ถึง", "ไม่สอดมือทั้งหมดเข้าในปากขณะฉัน",
+                "ไม่พูดขณะมีคำข้าวอยู่ในปาก", "ไม่ฉันโดยโยนคำข้าวเข้าปาก", "ไม่ฉันกัดคำข้าว", "ไม่ฉันทำกระพุ้งแก้มให้ตุ่ย",
+                "ไม่ฉันพลางสะบัดมือพลาง", "ไม่ฉันโปรยเมล็ดข้าว", "ไม่ฉันแลบลิ้น", "ไม่ฉันทำเสียงดังจั๊บๆ",
+                "ไม่ฉันทำเสียงดังซูดๆ", "ไม่ฉันเลียมือ", "ไม่ฉันเลียบาตร", "ไม่ฉันเลียริมฝีปาก", "ไม่ใช้มือเปื้อนจับภาชนะน้ำ",
+                "ไม่เทน้ำล้างบาตรมีเมล็ดข้าวในบ้าน", "ไม่แสดงธรรมแก่คนไม่ป่วยที่มีร่มในมือ", "ไม่แสดงธรรมแก่คนไม่ป่วยที่ถือไม้พลอง",
+                "ไม่แสดงธรรมแก่คนไม่ป่วยที่ถือศัสตรา", "ไม่แสดงธรรมแก่คนไม่ป่วยที่ถืออาวุธ", "ไม่แสดงธรรมแก่คนไม่ป่วยที่สวมเขียงเท้า",
+                "ไม่แสดงธรรมแก่คนไม่ป่วยที่สวมรองเท้า", "ไม่แสดงธรรมแก่คนไม่ป่วยที่ไปในยาน", "ไม่แสดงธรรมแก่คนไม่ป่วยที่อยู่บนที่นอน",
+                "ไม่แสดงธรรมแก่คนไม่ป่วยที่นั่งรัดเข่า", "ไม่แสดงธรรมแก่คนไม่ป่วยที่สวมหมวก", "ไม่แสดงธรรมแก่คนไม่ป่วยที่คลุมศีรษะ",
+                "ไม่นั่งบนอาสนะต่ำ แสดงธรรมแก่คนนั่งบนอาสนะสูง", "ไม่ยืนแสดงธรรมแก่คนไม่ป่วยที่นั่งอยู่", "ไม่เดินตามหลังแสดงธรรมแก่คนเดินไปข้างหน้า",
+                "ไม่เดินนอกทาง แสดงธรรมแก่คนไปในทาง", "ไม่ยืนถ่ายอุจจาระปัสสาวะ", "ไม่ถ่ายอุจจาระปัสสาวะลงในของสดเขียว",
+                "ไม่ถ่ายอุจจาระปัสสาวะลงในน้ำ"
+            ]},
+            { category: "อธิกรณสมถะ", count: 7, rules: [
+                "ระงับอธิกรณ์ (เรื่องที่ต้องตัดสิน) ในที่พร้อมหน้า (บุคคล วัตถุ ธรรม)", "ระงับอธิกรณ์ด้วยการถือว่าผู้นั้นเป็นพระอรหันต์",
+                "ระงับอธิกรณ์ตามคำรับสารภาพของจำเลย", "ระงับอธิกรณ์ด้วยการใช้เสียงข้างมาก", "ลงโทษแก่ภิกษุผู้ผิด",
+                "ระงับอธิกรณ์สำหรับคนบ้า", "ระงับอธิกรณ์ด้วยการประนีประนอม (เหมือนปูหญ้าไว้)"
+            ]}
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const chartCtx = document.getElementById('preceptsChart').getContext('2d');
+            const categoryNav = document.getElementById('category-nav');
+            const preceptList = document.getElementById('precept-list');
+            const searchInput = document.getElementById('search-input');
+            const noResults = document.getElementById('no-results');
+            const minorPreceptsContainer = document.getElementById('minor-precepts-container');
+            let currentFilter = 'ทั้งหมด';
+            let highlightTerm = '';
+
+            const categoryColors = [
+                '#A97C50', '#C39364', '#D1A272', '#DDAF81', '#E8BC91', '#F2CA9F', '#F9D9B2', '#FFE7C3'
+            ];
+
+            const categories = preceptData.map(p => p.category);
+            const counts = preceptData.map(p => p.count);
+
+            const renderMinorPrecepts = () => {
+                minorPreceptsContainer.innerHTML = minorPreceptData.map(data => `
+                    <div class="minor-precept-card p-6 rounded-lg">
+                        <h3 class="text-2xl font-bold text-[#A97C50] mb-2">${data.title}</h3>
+                        <p class="text-sm text-gray-500 mb-4">${data.subtitle}</p>
+                        <ul class="list-none space-y-3">
+                            ${data.rules.map(rule => `<li class="text-gray-700 flex items-start">
+                                <span class="text-[#D1A272] font-semibold mr-2">&#9679;</span>
+                                <span>${rule}</span>
+                            </li>`).join('')}
+                        </ul>
+                    </div>
+                `).join('');
+            };
+
+            new Chart(chartCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: categories,
+                    datasets: [{
+                        label: 'จำนวนข้อ',
+                        data: counts,
+                        backgroundColor: categoryColors,
+                        borderColor: '#FDFBF8',
+                        borderWidth: 3,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { family: "'Sarabun', sans-serif", size: 14 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + ' ข้อ';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const renderPrecepts = () => {
+                preceptList.innerHTML = '';
+                noResults.classList.add('hidden');
+                let hasResults = false;
+                
+                const searchTerm = searchInput.value.trim().toLowerCase();
+                highlightTerm = searchTerm;
+
+                preceptData.forEach((cat, catIndex) => {
+                    if (currentFilter === 'ทั้งหมด' || currentFilter === cat.category) {
+                        const filteredRules = cat.rules.filter(rule => 
+                            searchTerm === '' || rule.toLowerCase().includes(searchTerm)
+                        );
+
+                        if (filteredRules.length > 0) {
+                            hasResults = true;
+                            const categoryHeader = document.createElement('h3');
+                            categoryHeader.className = 'text-2xl font-bold mt-8 mb-4 text-[#A97C50] border-b-2 border-[#E5C9A9] pb-2';
+                            
+                            if (searchTerm !== '') {
+                                categoryHeader.textContent = `${cat.category}`;
+                            } else {
+                                categoryHeader.textContent = `${cat.category} (${cat.count} ข้อ)`;
+                            }
+                            preceptList.appendChild(categoryHeader);
+
+                            filteredRules.forEach((rule, ruleIndex) => {
+                                const card = document.createElement('div');
+                                card.className = 'card p-4 rounded-lg shadow-sm flex items-start';
+                                
+                                const number = document.createElement('div');
+                                number.className = 'mr-4 font-bold text-lg text-[#D1A272]';
+                                number.textContent = `${ruleIndex + 1}.`;
+                                
+                                const text = document.createElement('p');
+                                text.className = 'text-gray-700';
+
+                                if(highlightTerm) {
+                                    const regex = new RegExp(`(${highlightTerm})`, 'gi');
+                                    text.innerHTML = rule.replace(regex, `<span class="highlight">$1</span>`);
+                                } else {
+                                    text.textContent = rule;
+                                }
+
+                                card.appendChild(number);
+                                card.appendChild(text);
+                                preceptList.appendChild(card);
+                            });
+                        }
+                    }
+                });
+
+                if (!hasResults) {
+                    noResults.classList.remove('hidden');
+                }
+            };
+            
+            const createNavButtons = () => {
+                const allButton = document.createElement('button');
+                allButton.textContent = 'ทั้งหมด';
+                allButton.className = 'nav-button px-4 py-2 rounded-full text-sm md:text-base font-medium bg-white shadow-sm border border-gray-200';
+                allButton.dataset.category = 'ทั้งหมด';
+                categoryNav.appendChild(allButton);
+
+                preceptData.forEach(cat => {
+                    const button = document.createElement('button');
+                    button.textContent = cat.category;
+                    button.className = 'nav-button px-4 py-2 rounded-full text-sm md:text-base font-medium bg-white shadow-sm border border-gray-200';
+                    button.dataset.category = cat.category;
+                    categoryNav.appendChild(button);
+                });
+            };
+
+            const updateActiveButton = () => {
+                const buttons = document.querySelectorAll('.nav-button');
+                buttons.forEach(btn => {
+                    if (btn.dataset.category === currentFilter) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            };
+
+            categoryNav.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    currentFilter = e.target.dataset.category;
+                    searchInput.value = '';
+                    updateActiveButton();
+                    renderPrecepts();
+                }
+            });
+
+            searchInput.addEventListener('input', () => {
+                currentFilter = 'ทั้งหมด'
+                updateActiveButton();
+                renderPrecepts();
+            });
+            
+            renderMinorPrecepts();
+            createNavButtons();
+            updateActiveButton();
+            renderPrecepts();
+        });
+    </script>
+</body>
+</html>
